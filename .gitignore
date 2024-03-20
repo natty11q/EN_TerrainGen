@@ -42,7 +42,7 @@ bin/
 build/
 build
 CMakeSettings.json
-.*/
+
 resources/dat.txt
 resources/assets
 .cache/clangd

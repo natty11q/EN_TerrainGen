@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "(lldb) Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/TerrainGen",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    },
+    {
+      "type": "cmake",
+      "request": "launch",
+      "name": "Debug portfile(s)",
+      "cmakeDebugType": "external",
+      "pipeName": "/tmp/vcpkg_ext_portfile_dbg",
+      "preLaunchTask": "Debug vcpkg commands"
+    }
+  ]
+}
