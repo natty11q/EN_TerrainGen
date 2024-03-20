@@ -1,0 +1,68 @@
+cmake_minimum_required(VERSION "3.20.0")
+
+find_package(glm CONFIG REQUIRED)
+# find_package(glad CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
+# find_package(imgui CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
+find_package(SFML 2.6 COMPONENTS audio REQUIRED)
+
+
+
+# /Users/nathanielfrimpong-santeng/codestuffs/EnumeralTest/TerrainGen
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug$<$<CONFIG:Debug>:Debug>")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
+
+set(CMAKE_CXX_STANDARD 17)
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+endif(MSVC)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+
+
+# link_directories(/usr/local/Cellar/assimp/5.3.1/lib)
+
+project(TerrainGen VERSION 0.7.0)
+
+# add_compile_options("-v")
+# add_compile_options("-o" "${workspaceFolder}/outputs/BPHO_BETA_0_0_6"
+#                     "-framework" "OpenGL" "-framework" "Cocoa" 
+#                     "-framework" "IOKit"  "-framework" "CoreVideo"
+#                     "-framework" "CoreFoundation" "-Wno-deprecated")
+
+# add_compile_options("clang++ "  "-framework Cocoa" "-framework OpenGL"  "-Wall" "-lglfw3" "-I/usr/local/include/" "-L/usr/local/lib"  "-framework Quartz" "-framework IOKit")
+
+file(GLOB_RECURSE MAIN_SOURCES CONFIGURE_DEPENDS    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+                                                    "${CMAKE_CURRENT_SOURCE_DIR}/src/glad.c"
+                                                    # "${CMAKE_CURRENT_SOURCE_DIR}/EnumeralLearn/source/EnumeralLearn/Game/*.cpp"
+                                                    # "${CMAKE_CURRENT_SOURCE_DIR}/EnumeralLearn/source/EnumeralLearn/Window/*.cpp"
+                                                    # "${CMAKE_CURRENT_SOURCE_DIR}/EnumeralLearn/source/EnumeralLearn/*/*.cpp"
+                                                )
+
+add_executable(${PROJECT_NAME} "${MAIN_SOURCES}")
+
+
+# target_link_libraries("EnumeralLearn" glfw glimage glad)
+# target_include_directories(${PROJECTNAME} PRIVATE include )
+
+
+if(APPLE)
+    target_include_directories(${PROJECT_NAME} PRIVATE usr/local/include)
+endif()
+
+target_include_directories(${PROJECT_NAME} PRIVATE 
+                            ${CMAKE_CURRENT_SOURCE_DIR} 
+                            ${OpenGL_INCLUDE_DIRS}
+                            ${ASSIMP_INCLUDE_DIRS}
+                            ${SFML_INCLUDE_DIRS}
+                            )
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw ${GLFW_LIBRARIES} ${GLIMAGE_LIBRARIES} ${GLM_LIBRARIES} ${ASSIMP_LIBRARIES} sfml-audio)
+
+
+include_directories(
+                "/usr/local/include"
+                "${CMAKE_CURRENT_SOURCE_DIR}/src/header_files/"
+                "${CMAKE_CURRENT_SOURCE_DIR}/src/"
+                "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/includes/"
+                )

@@ -1,0 +1,26 @@
+#ifndef TEXTURE_LOADER_HPP
+#define TEXTURE_LOADER_HPP
+
+#include <GL/glu.h>
+
+class TextureLoader
+{
+public:
+
+    TextureLoader();
+    ~TextureLoader();
+
+    bool Load(char* path, int width, int height);
+    bool LoadAllDataFiles(char* dataPath, int width, int height);
+
+    GLuint GetID() const {return textureID;}
+    int getWidth();
+    int GetHeight();
+private:
+
+    GLuint textureID;
+
+};
+
+
+#endif // !TEXTURE_LOADER_HPP
