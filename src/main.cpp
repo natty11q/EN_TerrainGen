@@ -521,7 +521,7 @@ public:
 				newVerts.push_back(Vertex{NvertDiagonal.Position,Normal2,NvertDiagonal.Colour,NvertDiagonal.TexUV});
 				newVerts.push_back(Vertex{NvertVertical.Position,Normal2,NvertVertical.Colour,NvertVertical.TexUV});
 
-				crnt = (i * (this->width )) + j - 1;
+				crnt = (i * (this->width )) + j;
 				for(int k = 0 ; k < 6 ; ++k)
 				{
 					newInds.push_back((crnt * 6) + k);
@@ -1133,6 +1133,7 @@ int main(int argc, char* argv[])
 	Trippy = false; // Change to true if you want wireframe mode
     /* MAIN LOOP */
 	PlayerPhys physics(&camera);
+
 
 	glEnable(GL_DEPTH_TEST); // Enabling depth testing allows rear faces of 3D objects to be hidden behind front faces.
 	glEnable(GL_MULTISAMPLE); // Anti-aliasing

@@ -23,7 +23,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 # link_directories(/usr/local/Cellar/assimp/5.3.1/lib)
 
-project(TerrainGen VERSION 0.7.0)
+project(TerrainGen VERSION 0.7.3)
 
 # add_compile_options("-v")
 # add_compile_options("-o" "${workspaceFolder}/outputs/BPHO_BETA_0_0_6"

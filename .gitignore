@@ -45,6 +45,7 @@ CMakeSettings.json
 
 *.zip
 resources/dat.txt
+resources/imported
 resources/assets
 .cache/clangd
 \.cache/clangd
