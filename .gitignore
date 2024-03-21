@@ -43,6 +43,7 @@ build/
 build
 CMakeSettings.json
 
+*.zip
 resources/dat.txt
 resources/assets
 .cache/clangd
