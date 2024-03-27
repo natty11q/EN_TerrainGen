@@ -457,7 +457,7 @@ class Plane
 {
 public:
 
-	Plane(int SqrtDiv , float scale , float scaley = 40.0f ,glm::vec3 translate = glm::vec3(0.0f,0.0f,0.0f))
+	Plane(int SqrtDiv , float scale , float scaley = 40.0f ,glm::vec3 translate = glm::vec3(0.0f,0.0f,0.0f) ,float lac = 4.5,float per = 0.3 , int oct = 30,int contr = 4)
 	{
 		this->width  = SqrtDiv;
 		this->height = SqrtDiv;
@@ -481,7 +481,7 @@ public:
 		
 		std::cout << "NUM VERTICES = " << this->vertices.size() << std::endl;
 
-		this->displaceVertices();
+		// this->displaceVertices();
 
 		this->UpdateNormals(true);
 		
@@ -495,9 +495,9 @@ public:
 		std::vector<GLuint> newInds;
 		// glm::vec3 green(0.0f,1.0f,0.0f);
 		unsigned int crnt;
-		for (unsigned int i = 0; i < this->width - 1; i++ )
+		for (unsigned int i = 0; i < this->width ; i++ )
 		{
-			for (unsigned int j = 0; j < this->height -1 ; j++ )
+			for (unsigned int j = 0; j < this->height  ; j++ )
 			{
 				Vertex Cvert  = this->vertices[j + (i * this->width)];
 				Vertex NvertHorisontal = this->vertices[(j+1) + (i*this->width)];
@@ -521,13 +521,18 @@ public:
 				newVerts.push_back(Vertex{NvertDiagonal.Position,Normal2,NvertDiagonal.Colour,NvertDiagonal.TexUV});
 				newVerts.push_back(Vertex{NvertVertical.Position,Normal2,NvertVertical.Colour,NvertVertical.TexUV});
 
-				crnt = (i * (this->width )) + j;
+				crnt = (i * (this->height)) + j;
+
 				for(int k = 0 ; k < 6 ; ++k)
 				{
 					newInds.push_back((crnt * 6) + k);
-					// std::cout << "k : " << crnt << "\n";
+					std::cout << "k : " << crnt << "\n";
 				}
 			}
+				for(int l = 0 ; l < 6 ; ++l)
+				{
+					newInds.push_back((i * (this->width)) + this->height + l);
+				}
 		}
 
 		if (smooth)
@@ -717,11 +722,8 @@ private:
 
 void RefreshShader(ShaderClass* shader, std::string vertexPath ,std::string fragmentPath)
 {
-
 	ShaderClass new_shader( vertexPath.c_str() , fragmentPath.c_str() );
 	*shader = new_shader;
-
-
 }
 
 void window_size_callback(GLFWwindow* window, int* width, int* height)
@@ -738,7 +740,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
-void handleSongs(std::vector<std::string>* songlist , sf::Music* music)
+void handleSongs(std::vector<std::string>* songlist , sf::Music* music ,std::vector<std::string>* songsPlayed = nullptr)
 {
 	if (music->getStatus() == music->Playing || music->getStatus() == music->Paused) return;
 
@@ -747,10 +749,38 @@ void handleSongs(std::vector<std::string>* songlist , sf::Music* music)
 	if (!music->openFromFile(chosenSong))
 	{
 		std::cerr << " Failed to load sound buffer: " << chosenSong << "\n";
+		music->stop();
 		// sf::Music audio;
 	}
 	music->play();
+	if (songsPlayed != nullptr)	songsPlayed->push_back(chosenSong);
+
+	std::cout << "\nSongs Played {" << "\n";
+	for (int i = 0 ; i < songsPlayed->size(); i++)
+	{
+		std::cout << "\t" << (*songsPlayed)[i] << "\n";
+	}
+	std::cout << "}" << std::endl;
 } 
+
+void TogglePlayPause(sf::Music* music)
+{
+	if (music->getStatus() == music->Playing) { music->pause(); return; }
+	music->play();
+}
+
+void SwitchSongs(bool UD, sf::Music* music ,std::vector<std::string>* songsPlayed = nullptr, int* index = nullptr)
+{
+	if (UD)
+	{
+		music->stop();
+		return;
+	}
+	if (index == nullptr)	return;
+	(*index)--;
+	if ((*index) >= songlist->size())	(*index) = 0;
+	SetCurrentlyPlaying((*songlist)[*index]);
+}
 
 int main(int argc, char* argv[])
 {
@@ -821,8 +851,8 @@ int main(int argc, char* argv[])
 	ShaderClass shaderProgram2((shaderPath + "default_2.vert").c_str(),(shaderPath + "default_2.frag").c_str());
 	ShaderList.push_back(&shaderProgram2);
     
-	ShaderClass TerrainShaderProgram1((shaderPath + "Terrain.vert").c_str(),(shaderPath + "Terrain.frag").c_str());
-	ShaderList.push_back(&TerrainShaderProgram1);
+	ShaderClass TerrainShader((shaderPath + "Terrain.vert").c_str(),(shaderPath + "Terrain.frag").c_str());
+	ShaderList.push_back(&TerrainShader);
     
 	// ShaderClass TerrainShaderProgram2((shaderPath + "Terrain.vert_2").c_str(),(shaderPath + "Terrain_2.frag").c_str());
 	// ShaderList.push_back(&TerrainShaderProgram2);
@@ -833,7 +863,6 @@ int main(int argc, char* argv[])
 	ShaderClass HudShader((shaderPath + "HudShader.vert").c_str(),(shaderPath + "HudShader.frag").c_str());
 	ShaderList.push_back(&HudShader);
 
-	ShaderClass TerrainShader = TerrainShaderProgram1;
 
 	ShaderClass shaderProgram = shaderProgram1;
 
@@ -883,7 +912,7 @@ int main(int argc, char* argv[])
 	glEnable(GL_DEPTH_TEST);
 
 	// Enables Cull Facing
-	glEnable(GL_CULL_FACE);
+	// glEnable(GL_CULL_FACE);
 	// Keeps front faces
 	glCullFace(GL_BACK);
 	// Uses counter clock-wise standard
@@ -921,6 +950,12 @@ int main(int argc, char* argv[])
 	int divs    = 200;
 	float scale = 300.0f;
 	float scaley = 40.0f;
+
+	float lac = 4.5;
+	float per = 0.3;
+	int oct = 30;
+	int contr = 4;
+
 	glm::vec3 planeTranslation = glm::vec3(0.0f);
 
 	std::ifstream read( (recoursePath + "/dat.txt").c_str() );
@@ -956,28 +991,21 @@ int main(int argc, char* argv[])
 
 		std::cout<< "\n\n READING DATA :" << "chechkstring = [" << checkstring << "]\tpost = [" << checkstringPost << "]" << " found :" << found <<  "\n\n";
 
-		if (checkstring == "Divisions")
-		{
-			divs = std::stoi(checkstringPost);
-		}
-		else if (checkstring == "ScaleXZ")
-		{
-			scale = std::stof(checkstringPost);
-		}
-		else if (checkstring == "ScaleY")
-		{
-			scaley = std::stof(checkstringPost);
-		}
+		if (checkstring == "Divisions")	divs = std::stoi(checkstringPost);
+		else if (checkstring == "ScaleXZ")	scale = std::stof(checkstringPost);
+		else if (checkstring == "Lacunarity" || checkstring == "Lac" || checkstring == "lac")	lac = std::stof(checkstring);
+		else if (checkstring == "Persitance" || checkstring == "Per" || checkstring == "per")	per = std::stof(checkstring);
+		else if (checkstring == "Octaves" || checkstring == "Oct" || checkstring == "oct")	oct = std::stoi(checkstring);
+		else if (checkstring == "Contrast" || checkstring == "Con" || checkstring == "Contr" || checkstring == "contr" || checkstring == "con")	contr = std::stof(checkstring);
+		else if (checkstring == "ScaleY")	scaley = std::stof(checkstringPost);
 		else if (checkstring == "Plane Translation")
 		{
-
 			// assign the correct values to the plane translate.
 			int index = 0;
 			std::string StringValue;
 			std::vector<float> Value;
 			char j = ' ';
 			StringValue = "";
-
 			while(index < checkstring.length() ) // keep going until we hit a comma or the end of the string
 			{
 				j = checkstringPost[index];
@@ -1011,8 +1039,6 @@ int main(int argc, char* argv[])
 				Value = {0.0f ,0.0f ,0.0f};
 
 			}
-
-			
 			for (float i  : Value)
 			{
 				std::cout << checkstring;
@@ -1023,7 +1049,7 @@ int main(int argc, char* argv[])
 	}
 
 
-	Plane Ground(divs,scale, scaley , planeTranslation);
+	Plane Ground(divs,scale, scaley , planeTranslation , lac , per ,oct ,contr);
 
 
 	TerrainShader.Activate();
@@ -1137,6 +1163,7 @@ int main(int argc, char* argv[])
 
 	glEnable(GL_DEPTH_TEST); // Enabling depth testing allows rear faces of 3D objects to be hidden behind front faces.
 	glEnable(GL_MULTISAMPLE); // Anti-aliasing
+	std::vector<std::string> songsPlayed;
 	// glEnable(GL_BLEND); // GL_BLEND for OpenGL transparency which is further set within the fragment shader. 
     while (!glfwWindowShouldClose(window))
     {
@@ -1218,9 +1245,10 @@ int main(int argc, char* argv[])
 			currentVolume = clamp(currentVolume,0.0f,100.0f);
 			audio.setVolume(currentVolume);
 		}
+
 		if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
 		{
-			std::cout << "is it playing : " << audio.getStatus() << std::endl;
+			TogglePlayPause(&audio);
 		}
 
 
@@ -1266,7 +1294,7 @@ int main(int argc, char* argv[])
 
 		Ground.Draw(TerrainShader, camera);
 
-		glDisable(GL_CULL_FACE);
+		// glDisable(GL_CULL_FACE);
 
 		
 		for (int i = 0; i < Trippy; i++)
@@ -1281,7 +1309,7 @@ int main(int argc, char* argv[])
 			Grass.Draw(grassProgram, camera);
 		}
 
-		glEnable(GL_CULL_FACE);
+		// glEnable(GL_CULL_FACE);
 
         
 		glfwSwapBuffers(window);
@@ -1294,7 +1322,6 @@ int main(int argc, char* argv[])
 	TerrainShader.Delete();
 	shaderProgram1.Delete();
 	shaderProgram2.Delete();
-	TerrainShaderProgram1.Delete();
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;

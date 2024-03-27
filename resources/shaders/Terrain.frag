@@ -129,7 +129,7 @@ void main()
 	// outputs final color
 	float depth = logisticDepth(gl_FragCoord.z , 0.1f , 0.1f);
 	// FragColor = DirectLight() * lightColor * (1.0f - depth) + vec4(depth * vec3(0.85f, 0.85f, 0.90f), 1.0f);
-	FragColor = DirectLight() * lightColor ;
+	FragColor = DirectLight() * lightColor;
 	// FragColor = vec4((crntPos.y + translate) / heightscale);
     
     // float angleValue   = dot(normalize(Normal),vec3(0,1,0));
