@@ -36,7 +36,7 @@ class HudVbo
 {
 public:
 
-		HudVbo(std::vector<float>& vertices);
+	HudVbo(std::vector<float>& vertices);
 
         void Bind();
         void Unbind();

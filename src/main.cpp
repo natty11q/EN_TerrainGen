@@ -554,7 +554,6 @@ public:
 
 	void displaceVertices()
 	{
-		
 		std::future<void> m_futures;
 		for (int i = 0 ; i < this->divisions; ++i)
 		{
@@ -697,7 +696,6 @@ private:
 
 	static void updateVertxPositions(std::vector<Vertex>* vertices,int index , std::vector<float>* value , float yscale)
 	{
-		// size = sizeof(&vertices);
 		(*vertices)[index].Position.y += (*value)[index] * yscale;
 	}
 
@@ -769,18 +767,18 @@ void TogglePlayPause(sf::Music* music)
 	music->play();
 }
 
-void SwitchSongs(bool UD, sf::Music* music ,std::vector<std::string>* songsPlayed = nullptr, int* index = nullptr)
-{
-	if (UD)
-	{
-		music->stop();
-		return;
-	}
-	if (index == nullptr)	return;
-	(*index)--;
-	if ((*index) >= songlist->size())	(*index) = 0;
-	SetCurrentlyPlaying((*songlist)[*index]);
-}
+// void SwitchSongs(bool UD, sf::Music* music ,std::vector<std::string>* songsPlayed = nullptr, int* index = nullptr)
+// {
+// 	if (UD)
+// 	{
+// 		music->stop();
+// 		return;
+// 	}
+// 	if (index == nullptr)	return;
+// 	(*index)--;
+// 	if ((*index) >= songlist->size())	(*index) = 0;
+// 	SetCurrentlyPlaying((*songlist)[*index]);
+// }
 
 int main(int argc, char* argv[])
 {
@@ -1203,7 +1201,6 @@ int main(int argc, char* argv[])
 
 
 		handleSongs(&songList, &audio);
-
 
 
 
